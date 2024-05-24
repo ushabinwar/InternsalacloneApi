@@ -13,14 +13,25 @@ app.use(logger("tiny"))
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
+// session ans cookie
+const session = require("express-session");
+const cookieparser = require("cookie-parser")
+app.use(session({
+    resave: true,
+    saveUninitialized:true,
+    secret:process.env.EXPRESS_SESSION_SECRET,
+}))
+app.use(cookieparser())// it activate cookie
+
 //routes
 app.use("/" , require("./routes/indexRouter"))
 
 //error handling
-const ErrorHndler = require("./utils/ErrorHanler")
+const ErrorHandler = require("./utils/ErrorHandler")
 const {generatedErrors} = require("./middlewares/errors")
+const cookieParser = require("cookie-parser")
 app.all("*",(req, res, next)=>{
-    next(new ErrorHndler(`Requested URL Not Found ${req.url}`, 404))
+    next(new ErrorHandler(`Requested URL Not Found ${req.url}`, 404))
 })
 app.use(generatedErrors)
 
