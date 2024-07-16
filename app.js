@@ -23,6 +23,10 @@ app.use(session({
 }))
 app.use(cookieparser())// it activate cookie
 
+// express file-upload
+const fileupload =  require("express-fileupload")
+app.use(fileupload())
+
 //routes
 app.use("/" , require("./routes/indexRouter"))
 

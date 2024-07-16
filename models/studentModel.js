@@ -4,7 +4,38 @@ const jwt = require("jsonwebtoken");
 const { stringify } = require("uuid");
  
 const studentModel = new mongoose.Schema({
-
+    firstname : {
+        type:String,
+        required:[true,"First Name is required"],
+        minLength: [4, "First Name should be atleast 4 charachter long"]
+    },
+    lastname : {
+        type:String,
+        required:[true,"Last Name is required"],
+        minLength: [4, "Last Name should be atleast 4 charachter long"]
+    },
+    contact:{
+        type:String,
+        required:[true,"Last Name is required"],
+        maxLength:[10,"Contact must have 10 characters"],
+        minLength: [10, "Contact should be atleast 10 charachter long"]
+    },
+    city:{
+        type:String,
+        required:[true,"City Name is required"],
+        minLength: [3, "City should be atleast 3 charachter long"]
+    },
+    gender:{
+        type:String,
+        enum:["Male","Female", "Others"]
+    },
+    avatar:{
+        type:Object,
+        default:{
+            fileId:"",
+            url:"https://images.unsplash.com/photo-1721068685423-7b2512ef2e28?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+        }
+    },
     email:{
         type:String,
         required:[true,"Email is required"],
