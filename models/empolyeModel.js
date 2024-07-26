@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");
 const { stringify } = require("uuid");
  
-const studentModel = new mongoose.Schema({
+const employeModel = new mongoose.Schema({
     firstname : {
         type:String,
         required:[true,"First Name is required"],
@@ -16,20 +16,18 @@ const studentModel = new mongoose.Schema({
     },
     contact:{
         type:String,
-        required:[true,"Contact is required"],
+        required:[true,"Last Name is required"],
         maxLength:[10,"Contact must have 10 characters"],
         minLength: [10, "Contact should be atleast 10 charachter long"]
     },
-    city:{
+
+    organizationname : {
         type:String,
-        required:[true,"City Name is required"],
-        minLength: [3, "City should be atleast 3 charachter long"]
+        required:[true,"Organization Name is required"],
+        minLength: [4, "Organization Name should be atleast 4 charachter long"]
     },
-    gender:{
-        type:String,
-        enum:["Male","Female", "Others"]
-    },
-    avatar:{
+    
+    organizationlogo:{
         type:Object,
         default:{
             fileId:"",
@@ -54,16 +52,6 @@ const studentModel = new mongoose.Schema({
       default:"0"
 
     },
-    resume :{
-        education:[],
-        jobs:[],
-        internships:[],
-        responsibilities:[],
-        courses:[],
-        projects:[],
-        skills:[],
-        accomplishments:[]
-    },
     internships:[
         {
             type:mongoose.Schema.Types.ObjectId,
@@ -78,7 +66,7 @@ const studentModel = new mongoose.Schema({
     ]
 }, {timestamps:true})
 
-studentModel.pre("save", function(){
+employeModel.pre("save", function(){
 
     if(!this.isModified("password")){
         return;
@@ -88,15 +76,15 @@ studentModel.pre("save", function(){
     this.password = bcrypt.hashSync(this.password, salt);
 });
 
-studentModel.methods.comparepassword = function(password){
+employeModel.methods.comparepassword = function(password){
     return bcrypt.compareSync(password, this.password)
 }
 
 // for generating token
-studentModel.methods.getjwttoken = function(){
+employeModel.methods.getjwttoken = function(){
     return jwt.sign({id: this._id}, process.env.JWT_SECRET , {expiresIn:process.env.JWT_EXPIRE})
 } //.sign mean create jwt token
 
-const Student = mongoose.model("student", studentModel)
+const Employe = mongoose.model("employe", employeModel)
 
-module.exports = Student;
+module.exports = Employe;

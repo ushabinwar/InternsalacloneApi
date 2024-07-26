@@ -1,6 +1,8 @@
 const { Error } = require("mongoose")
 const {catchAsyncError} = require("../middlewares/catchAsyncError")
 const Student =  require("../models/studentModel")
+const Internship =  require("../models/internshipModel")
+const Job =  require("../models/jobModel")
 const ErrorHndler = require("../utils/ErrorHandler")
 const { sendtoken } = require("../utils/SendToken")
 const { sendmail } = require("../utils/nodemailer")
@@ -13,6 +15,7 @@ exports.homepage = catchAsyncError(async (req, res, next)=>{
 
 exports.currentUser = catchAsyncError(async (req, res, next)=>{
         const student = await Student.findById(req.id).exec();
+        // console.log(student)
 
         res.json({student})
 })
@@ -105,7 +108,7 @@ exports.studentavatar = catchAsyncError(async (req, res, next)=>{
                 await imagekit.deleteFile(student.avatar.fileId)
         }
         
-        // uploading dile
+        // uploading file
         const {fileId , url} = await imagekit.upload({
                 file:file.data,
                 fileName : modifiedFileName
@@ -118,3 +121,57 @@ exports.studentavatar = catchAsyncError(async (req, res, next)=>{
            
         })
 })
+
+
+//------------------apply internship---------------
+
+exports.applyinternship = catchAsyncError(async (req, res, next)=>{
+        const student = await Student.findById(req.id).exec();
+        
+        const internship = await Internship.findById(req.params.internshipid).exec()
+        // if (!student) {
+        //         return res.status(404).json({ message: 'Student not found' });
+        //     }
+        
+        //     if (!internship) {
+        //         return res.status(404).json({ message: 'Internship not found' });
+        //     }
+        student.internships.push(internship._id)
+        internship.students.push(student._id)
+        await student.save();
+        await internship.save()
+
+        res.json({student, internship})
+})
+
+//------------------apply job---------------
+
+exports.applyjob = catchAsyncError(async (req, res, next)=>{
+        const student = await Student.findById(req.id).exec();
+        
+        const job = await Job.findById(req.params.jobid).exec()
+        // if (!student) {
+        //         return res.status(404).json({ message: 'Student not found' });
+        //     }
+        
+        //     if (!job) {
+        //         return res.status(404).json({ message: 'job not found' });
+        //     }
+        student.jobs.push(job._id)
+        job.students.push(student._id)
+        await student.save();
+        await job.save()
+
+        res.json({student, job})
+})
+
+
+//==============delete student ===================
+
+exports.deletestudent = catchAsyncError(async (req, res, next)=>{
+        const student = await Student.findByIdAndDelete(req.params.id).exec();
+
+        res.json({success:true, message:"Student Deleted Sucessfully! "})
+})
+
+
